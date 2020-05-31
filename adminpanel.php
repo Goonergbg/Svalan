@@ -15,6 +15,12 @@ $sql = "SELECT * FROM `admin` WHERE id = '".$_SESSION['user']."'";
 $row = $user->details($sql);
 $db = new database();
 $query = "SELECT * FROM `members` ORDER BY `category`";
+$cat = "SELECT `category`, `team`,
+         COUNT(*)
+FROM `members`
+GROUP BY  `team`, `category`
+ORDER BY  `category`, COUNT(*) DESC;";
+$reader = $db->select($cat);
 $read = $db->select($query);
 ?>
 
@@ -35,7 +41,7 @@ $read = $db->select($query);
   <h1 class="display-4">Adminpanelen</h1>
   <a href="logout.php" class="btn btn-dark"> Logga Ut</a>
     <hr class="my-4">
-    <h3>Medlemmar | <a href="create.php">Lägg till en ny medlem</a></h3>
+    <h3>Alla Medlemmar | <a href="create.php">Lägg till en ny medlem</a></h3>
 
     <table class="crud-table">
     <tr>
@@ -66,6 +72,26 @@ $read = $db->select($query);
     <?php } ?>
     <?php } else { ?>
     <p>Det finns ingen data</p>
+    <?php } ?>
+    </table>
+
+    <h3>Antal medlemmar i de olika sporterna/lagen</h3>
+          <table class="crud-table">
+    <tr>
+    <th>Sport</th>
+    <th>Lag</th>
+    <th>Antal Medlemmar</th>
+    </tr>
+
+    <?php
+    while($row = $reader->fetch_assoc()) { ?>
+
+    <tr>
+    <td><?php echo $row['category']; ?></td>
+    <td><?php echo $row['team']; ?></td>
+    <td><?php echo $row['COUNT(*)'] ?></td>
+
+    </tr>
     <?php } ?>
     </table>
 
